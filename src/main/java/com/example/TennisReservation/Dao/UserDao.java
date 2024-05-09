@@ -19,7 +19,7 @@ public class UserDao{
         return user;
     }
 
-    public Optional<User> findById(String username) {
+    public Optional<User> findByUsername(String username) {
         Session session = sessionFactory.getCurrentSession();
         User user = session.get(User.class, username);
         return Optional.ofNullable(user);

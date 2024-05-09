@@ -1,4 +1,4 @@
-package com.example.TennisReservation.Services;
+package com.example.TennisReservation.Configurators;
 
 import com.example.TennisReservation.Dao.CourtDao;
 import com.example.TennisReservation.Dao.CustomerDao;
