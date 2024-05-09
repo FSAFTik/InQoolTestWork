@@ -1,17 +1,11 @@
 package com.example.TennisReservation.Entities;
 
-
-
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Column;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+
+import javax.persistence.*;
 import java.util.List;
 
 
@@ -22,19 +16,19 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name= "customers")
-public class Customer {
-
+@Table(name = "customers")
+public class Customer extends SoftDeletable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false, unique = true, name = "phone_number")
+    @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "customer")
+    @JsonManagedReference
+    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
     private List<Reservation> reservations;
+
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted;
 }
