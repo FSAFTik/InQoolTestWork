@@ -1,4 +1,4 @@
-package com.example.TennisReservation.Services;
+package com.example.TennisReservation.Configurators;
 
 import com.example.TennisReservation.Dao.CourtDao;
 import com.example.TennisReservation.Dao.CustomerDao;
@@ -17,10 +17,20 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 
+/**
+ * This class is responsible for configuring the services for the application.
+ * It is annotated with @Configuration to indicate that it's a source of bean definitions.
+ * The @EnableTransactionManagement annotation is used to enable Spring's annotation-driven transaction management capability.
+ */
 @Configuration
 @EnableTransactionManagement
 public class ServiceConfig {
 
+    /**
+     * Configures the DataSource bean.
+     *
+     * @return DataSource
+     */
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -29,6 +39,11 @@ public class ServiceConfig {
         return dataSource;
     }
 
+    /**
+     * Configures the SessionFactory bean.
+     *
+     * @return LocalSessionFactoryBean
+     */
     @Bean
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
@@ -38,6 +53,11 @@ public class ServiceConfig {
         return sessionFactory;
     }
 
+    /**
+     * Sets the Hibernate properties.
+     *
+     * @return Properties
+     */
     private Properties hibernateProperties() {
         Properties properties = new Properties();
         properties.setProperty("hibernate.show_sql", "true");
@@ -47,26 +67,52 @@ public class ServiceConfig {
         return properties;
     }
 
+    /**
+     * Configures the ReservationDao bean.
+     *
+     * @return ReservationDao
+     */
     @Bean
     public ReservationDao reservationDao() {
         return new ReservationDao(sessionFactory().getObject());
     }
 
+    /**
+     * Configures the CourtDao bean.
+     *
+     * @return CourtDao
+     */
     @Bean
     public CourtDao courtDao() {
         return new CourtDao(sessionFactory().getObject());
     }
 
+    /**
+     * Configures the CustomerDao bean.
+     *
+     * @return CustomerDao
+     */
     @Bean
     public CustomerDao customerDao() {
         return new CustomerDao(sessionFactory().getObject());
     }
 
+    /**
+     * Configures the SurfaceDao bean.
+     *
+     * @return SurfaceDao
+     */
     @Bean
     public SurfaceDao surfaceDao() {
         return new SurfaceDao(sessionFactory().getObject());
     }
 
+    /**
+     * Configures the PlatformTransactionManager bean.
+     *
+     * @param sessionFactory SessionFactory
+     * @return PlatformTransactionManager
+     */
     @Bean
     public PlatformTransactionManager transactionManager(SessionFactory sessionFactory) {
         HibernateTransactionManager transactionManager = new HibernateTransactionManager();

@@ -22,26 +22,26 @@ public class ReservationServiceImpl implements ReservationService {
     private final CustomerDao customerDao;
     private final CourtServiceImpl courtService;
 
+
     @Override
     public Reservation createReservation(Reservation reservation) {
         reservation.setCourt(courtService.getCourt(reservation.getCourtId()).
                 orElseThrow(() -> new IllegalArgumentException("The reservation court does not exist")));
-
         if (isInConflict(reservation)) {
             throw new IllegalArgumentException("The reservation overlaps with an existing reservation or is in the past.");
         }
-
         reservation.setCustomer(customerDao.findByPhoneNumber(
                 reservation.getCustomerPhoneNumber()).orElseGet(() ->
                 createNewCustomer(reservation.getCustomerPhoneNumber(), reservation.getCustomerName())));
-
         return reservationDao.save(reservation);
     }
+
 
     @Override
     public List<Reservation> getAllReservations(String phoneNumber) {
         return reservationDao.getAllReservations(phoneNumber);
     }
+
 
     @Override
     public List<Reservation> getAllReservations(long courtId) {
@@ -49,10 +49,12 @@ public class ReservationServiceImpl implements ReservationService {
         return court.isPresent() ? reservationDao.getAllReservations(court.get()) : List.of();
     }
 
+
     @Override
     public List<Reservation> getAllReservations() {
         return reservationDao.findAll();
     }
+
 
     @Override
     public List<Reservation> getAllFutureReservations(long courtId) {
@@ -62,9 +64,18 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    public List<Reservation> getAllFutureReservations(String phoneNumber) {
+        return getAllReservations(phoneNumber).stream()
+                .filter(reservation -> reservation.getStartTime().isAfter(LocalDateTime.now()))
+                .toList();
+    }
+
+
+    @Override
     public Optional<Reservation> getReservation(long id) {
         return reservationDao.findById(id);
     }
+
 
     @Override
     public Reservation updateReservation(long id, Reservation reservation) {
@@ -73,7 +84,6 @@ public class ReservationServiceImpl implements ReservationService {
 
         existingReservation.setCourt(courtService.getCourt(reservation.getCourtId())
                 .orElseThrow(() -> new IllegalArgumentException("The reservation court does not exist")));
-
         existingReservation.setStartTime(reservation.getStartTime());
         existingReservation.setEndTime(reservation.getEndTime());
         existingReservation.setDuo(reservation.isDuo());
@@ -88,10 +98,12 @@ public class ReservationServiceImpl implements ReservationService {
         return existingReservation;
     }
 
+
     @Override
     public void deleteReservation(long id) {
         getReservation(id).ifPresent(reservationDao::delete);
     }
+
 
     private boolean isInConflict(Reservation reservation) {
         if (reservation.getStartTime().isBefore(LocalDateTime.now()) || reservation.getEndTime().isBefore(reservation.getStartTime())) {
@@ -102,6 +114,7 @@ public class ReservationServiceImpl implements ReservationService {
                         !existing.getEndTime().isBefore(reservation.getStartTime()) &&
                         !existing.getStartTime().isAfter(reservation.getEndTime()));
     }
+
 
     private Customer createNewCustomer(String phoneNumber, String name) {
         Customer customer = new Customer();
