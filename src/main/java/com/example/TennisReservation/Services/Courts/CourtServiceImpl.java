@@ -4,9 +4,6 @@ import com.example.TennisReservation.Dao.CourtDao;
 import com.example.TennisReservation.Dao.ReservationDao;
 import com.example.TennisReservation.Dao.SurfaceDao;
 import com.example.TennisReservation.Entities.Court;
-import com.example.TennisReservation.Entities.Surface;
-import com.example.TennisReservation.Services.Reservations.ReservationService;
-import com.example.TennisReservation.Services.Reservations.ReservationServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,7 +43,9 @@ public class CourtServiceImpl implements CourtService{
     @Override
     public Court UpdateCourt(long id, Court court) {
         Court existingCourt = getCourt(id).orElseThrow(() -> new RuntimeException("Court not found"));
-        existingCourt.setSurface(court.getSurface());
+        existingCourt.setSurface(surfaceDao.findById(court.getSurfaceId())
+                .orElseThrow(() -> new IllegalArgumentException("The surface does not exist")));
+        existingCourt.setSurfaceId(court.getSurfaceId());
         courtDao.update(existingCourt);
         return existingCourt;
     }

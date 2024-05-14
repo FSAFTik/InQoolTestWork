@@ -1,5 +1,12 @@
 package com.example.TennisReservation.JWT;
 
-
-public record JwtResponse(String jwt) {
+/**
+ * This record to represent a JWT response.
+ */
+public record JwtResponse(
+        /**
+         * The JWT token string.
+         */
+        String jwt
+) {
 }
